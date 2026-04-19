@@ -1,0 +1,6 @@
+{
+  "url": "https://helios.example/api/",
+  "username": "username",
+  "password": "password",
+  "token": "optional-token"
+}

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+*.log
+coverage/
+.nyc_output/
+helios.account.json
+google-credentials.json
+.DS_Store
+/google-sa-helios2email.json
+/.idea/
