@@ -30,4 +30,4 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/DDWV_beslissing:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ddwv_beslissing:latest
