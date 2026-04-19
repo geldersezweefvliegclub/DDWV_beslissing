@@ -7,10 +7,10 @@ export class DdwvBeslissingScheduler {
   private readonly logger = new Logger(DdwvBeslissingScheduler.name);
 
   constructor(private readonly workflow: DdwvBeslissingWorkflowService) {
-    this.logger.log(`Cron expression: ${process.env.CRON_DDWV_BESLISSING || '0 18 * * *'}`);
+    this.logger.log(`Cron expression: ${process.env.CRON_DDWV_BESLISSING || '0 21 * * *'}`);
   }
 
-  @Cron(process.env.CRON_DDWV_BESLISSING || '0 21 * * *', {
+  @Cron(process.env.CRON_DDWV_BESLISSING || '* * * * *', {
     timeZone: process.env.CRON_TIMEZONE || 'Europe/Amsterdam'
   })
   async handleCron(): Promise<void> {

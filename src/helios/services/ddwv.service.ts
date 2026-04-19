@@ -1,16 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { APIService } from './api.service';
-import { DdwvBedrijfType } from '../helios.types';
+
+export enum UitkomstBeslissing {
+  CLUB,
+  LIEREN,
+  SLEPEN,
+  ANNULEREN
+}
 
 @Injectable()
-export class DdwvService {
-  constructor(private readonly apiService: APIService) {}
+export class DdwvService
+{
+  constructor(private readonly apiService: APIService)
+  {
+  }
 
-  async getTypeBedrijf(datum: string, hash: string): Promise<DdwvBedrijfType> {
-    const response = await this.apiService.getText('DDWV/ToetsingDDWV', {
+  async Beslissing(datum: string, hash: string): Promise<UitkomstBeslissing>
+  {
+    const response: string = await this.apiService.get('DDWV/ToetsingDDWV', {
       DATUM: datum,
       HASH: hash
     });
-    return JSON.parse(response) as DdwvBedrijfType;
+
+    const uppercaseValue = response.toUpperCase();
+    return UitkomstBeslissing[uppercaseValue as keyof typeof UitkomstBeslissing];
   }
 }

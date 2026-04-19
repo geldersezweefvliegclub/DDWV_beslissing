@@ -1,28 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import { loadTemplate, renderTemplate } from '../common/html.util';
-import { DdwvBedrijfType } from '../helios/helios.types';
+import {UitkomstBeslissing} from "../helios/services/ddwv.service";
 
 @Injectable()
 export class DdwvMailBuilder {
-  buildPilotMail(type: DdwvBedrijfType, voornaam: string, datumString: string): string {
-    const file = {
-      club: 'ddwv-club.html',
-      lieren: 'ddwv-lieren.html',
-      slepen: 'ddwv-slepen.html',
-      annuleren: 'ddwv-annuleren.html'
-    }[type];
+  private readonly logger = new Logger(DdwvMailBuilder.name);
 
+  buildVliegerMail(type: UitkomstBeslissing, voornaam: string, datumString: string): string {
+    const file = {
+      CLUB: 'ddwv-club.html',
+      LIEREN: 'ddwv-lieren.html',
+      SLEPEN: 'ddwv-slepen.html',
+      ANNULEREN: 'ddwv-annuleren.html'
+    }[UitkomstBeslissing[type]];
+
+    if (!file) {
+      this.logger.error(`Onbekend type bedrijf ${type.toString()}, geen mail template beschikbaar`);
+      return '';
+    }
     return renderTemplate(loadTemplate(file), {
-      voornaam,
-      datumString
+      VOORNAAM: voornaam,
+      DATUM: datumString
     });
   }
 
   buildCrewMail(voornaam: string, datumString: string, bericht: string): string {
     return renderTemplate(loadTemplate('ddwv-crew.html'), {
-      voornaam,
-      datumString,
-      bericht
+      VOORNAAM: voornaam,
+      DATUM: datumString,
+      BERICHT: bericht
     });
   }
 }
