@@ -1,14 +1,5 @@
-import { renderTemplate } from './html.util';
+import { renderTemplate, loadTemplate, escapeHtml } from './html.util';
 
-const template = `
-<html>
-  <body style="font-family: Arial, Helvetica, sans-serif; font-size: 12px;">
-    <p>Er is een fout opgetreden in DDWV_beslissing.</p>
-    <p><b>Onderwerp:</b> {{subject}}</p>
-    <pre>{{message}}</pre>
-  </body>
-</html>`;
-
-export function buildErrorMail(subject: string, message: string): string {
-  return renderTemplate(template, { subject, message });
+export function buildErrorMail(titel: string, inhoud: string): string {
+  return renderTemplate(loadTemplate('error-email.html'), { TITEL: escapeHtml(titel), INHOUD: escapeHtml(inhoud) });
 }

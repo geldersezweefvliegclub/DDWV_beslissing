@@ -10,7 +10,7 @@ export class DdwvBeslissingScheduler {
     this.logger.log(`Cron expression: ${process.env.CRON_DDWV_BESLISSING || '0 21 * * *'}`);
   }
 
-  @Cron(process.env.CRON_DDWV_BESLISSING || '* * * * *', {
+  @Cron(process.env.CRON_DDWV_BESLISSING || '0 21 * * *', {
     timeZone: process.env.CRON_TIMEZONE || 'Europe/Amsterdam'
   })
   async handleCron(): Promise<void> {
