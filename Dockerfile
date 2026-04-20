@@ -1,16 +1,20 @@
-FROM node:20-alpine AS builder
-WORKDIR /app
+# Use an official Node.js runtime as a parent image
+FROM node:18-alpine
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
-RUN npm ci
+
+# Install any needed packages
+RUN npm install
+
+# Bundle app source
 COPY . .
+
+# Build the project
 RUN npm run build
 
-FROM node:20-alpine
-WORKDIR /app
-ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY --from=builder /app/dist ./dist
-COPY templates ./templates
-COPY helios.account.json.example ./helios.account.json.example
-CMD ["node", "dist/main.js"]
+# Run the app when the container launches
+CMD [ "npm", "start" ]
