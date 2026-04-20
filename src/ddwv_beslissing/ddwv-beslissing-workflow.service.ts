@@ -111,7 +111,7 @@ export class DdwvBeslissingWorkflowService {
       });
 
       const typeDienst = (dienst.TYPE_DIENST_ID == HeliosDienstenTypes.OCHTEND_STARTLEIDER ? 'Veldleider' : dienst.TYPE_DIENST) || ''
-      this.logger.log(`Crew mail verstuurd naar ${email} (${typeDienst})'})`);
+      this.logger.log(`Crew mail verstuurd naar ${email} (${typeDienst})`);
     }
   }
 
