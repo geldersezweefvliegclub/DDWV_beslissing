@@ -12,7 +12,7 @@ import {SeqTransport} from "@datalust/winston-seq";
  * Allows for logging to multiple transports, such as the console and Seq, or modifying the log format.
  */
 const createLogger = () => WinstonModule.createLogger({
-  level: 'debug',
+  level: process.env.LOGGER_LEVEL || 'info',
   format: winston.format.combine(   /* This is required to get errors to log with stack traces. See https://github.com/winstonjs/winston/issues/1498 */
      winston.format.errors({stack: true}),
      winston.format.json(),
@@ -23,7 +23,6 @@ const createLogger = () => WinstonModule.createLogger({
     Environment: process.env.NODE_ENV || 'Local',
   },
   transports: [
-    // log everything to the console
     new winston.transports.Console({
       format: winston.format.combine(
          winston.format.colorize({
@@ -32,15 +31,15 @@ const createLogger = () => WinstonModule.createLogger({
          winston.format.simple(),
       ),
     }),
-    new SeqTransport({
-      serverUrl: process.env.LOGGER_SERVER_URL || 'http://localhost:5341',
+    ...(process.env.LOGGER_SERVER_URL ? [new SeqTransport({
+      serverUrl: process.env.LOGGER_SERVER_URL,
       apiKey: process.env.LOGGER_API_KEY,
-      onError: (e => {
+      onError: ((e: Error) => {
         console.error(e);
       }),
       handleExceptions: true,
       handleRejections: true,
-    }),
+    })] : []),
   ],
 });
 
