@@ -46,8 +46,9 @@ export class DdwvBeslissingWorkflowService {
     this.logger.log(`Uitkomst voor ${datum}: ${UitkomstBeslissing[beslissing]}`);
 
     const aanmeldingen = await this.aanwezigLedenService.getAanmeldingen(datum, datum);
+    const terletAanmeldingen = aanmeldingen.filter(a => a.VLIEGVELD_ID === 901);  // 901 = Terlet
 
-    await this.emailVliegers(beslissing, aanmeldingen, datumString);
+    await this.emailVliegers(beslissing, terletAanmeldingen, datumString);
     await this.emailCrew(beslissing, datum, datumString);
   }
 
