@@ -46,7 +46,7 @@ export class DdwvBeslissingWorkflowService {
     this.logger.log(`Uitkomst voor ${datum}: ${UitkomstBeslissing[beslissing]}`);
 
     const aanmeldingen = await this.aanwezigLedenService.getAanmeldingen(datum, datum);
-    const terletAanmeldingen = aanmeldingen.filter(a => a.VLIEGVELD_ID === 901);  // 901 = Terlet
+    const terletAanmeldingen = aanmeldingen.filter(a => a.VELD_ID === 901);  // 901 = Terlet
 
     await this.emailVliegers(beslissing, terletAanmeldingen, datumString);
     await this.emailCrew(beslissing, datum, datumString);
@@ -79,8 +79,6 @@ export class DdwvBeslissingWorkflowService {
   }
 
   private async emailCrew(uitkomst: UitkomstBeslissing, datum: string, datumString: string): Promise<void> {
-
-
     if (uitkomst === UitkomstBeslissing.CLUB) {
       this.logger.log('Clubdag: geen crew mail nodig.');
       return;

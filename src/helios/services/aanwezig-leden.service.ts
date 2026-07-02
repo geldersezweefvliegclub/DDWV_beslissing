@@ -5,7 +5,7 @@ export interface AanwezigLidRecord {
   VOORNAAM?: string;
   NAAM?: string;
   EMAIL?: string;
-  VLIEGVELD_ID?: number;
+  VELD_ID?: number;
   LIDTYPE_ID?: number;
   LIDTYPE?: number | string;
 }
