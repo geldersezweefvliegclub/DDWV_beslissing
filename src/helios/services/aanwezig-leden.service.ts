@@ -14,14 +14,6 @@ export interface AanwezigLidRecord {
 export class AanwezigLedenService {
   constructor(private readonly apiService: APIService) {}
 
-  async getAanmeldingen(beginDatum: string, eindDatum: string): Promise<AanwezigLidRecord[]> {
-    const response = await this.apiService.get<HeliosDatasetResponse<AanwezigLidRecord>>('AanwezigLeden/GetObjects', {
-      BEGIN_DATUM: beginDatum,
-      EIND_DATUM: eindDatum
-    });
-    return response.dataset ?? [];
-  }
-
   async getAanmeldingenVoorVeld(
     beginDatum: string,
     eindDatum: string,

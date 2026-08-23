@@ -38,17 +38,25 @@ export class APIService {
   }
 
   async get<T>(endpoint: string, params?: KeyValueArray, headers?: Headers): Promise<T> {
-    const response = await this.request('GET', endpoint, undefined, params, headers);
-    return response.json() as Promise<T>;
+    return this.requestJson<T>('GET', endpoint, undefined, params, headers);
   }
 
   async post<T>(endpoint: string, body: unknown, params?: KeyValueArray): Promise<T> {
-    const response = await this.request('POST', endpoint, JSON.stringify(body), params, this.jsonHeaders());
-    return response.json() as Promise<T>;
+    return this.requestJson<T>('POST', endpoint, JSON.stringify(body), params, this.jsonHeaders());
   }
 
   async put<T>(endpoint: string, body: unknown, params?: KeyValueArray): Promise<T> {
-    const response = await this.request('PUT', endpoint, JSON.stringify(body), params, this.jsonHeaders());
+    return this.requestJson<T>('PUT', endpoint, JSON.stringify(body), params, this.jsonHeaders());
+  }
+
+  private async requestJson<T>(
+    method: string,
+    endpoint: string,
+    body?: BodyInit,
+    params?: KeyValueArray,
+    headers?: Headers
+  ): Promise<T> {
+    const response = await this.request(method, endpoint, body, params, headers);
     return response.json() as Promise<T>;
   }
 
@@ -91,6 +99,9 @@ export class APIService {
 
       return response;
     } catch (error: any) {
+      if (error instanceof HttpException) {
+        throw error; // al correct gegooid door handleError(), status niet overschrijven
+      }
       const errorMessage = `API call to ${url.toString()} failed with an exception: ${error.message}`;
       this.logger.error(errorMessage, error.stack);
       await this.sendErrorMail('DDWV_beslissing API Exception', errorMessage);

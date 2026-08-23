@@ -45,45 +45,50 @@ export class DdwvBeslissingWorkflowService {
       return;
     }
 
-    const beslissing = await this.bepaalTypeBedrijf(datum, rooster);
-    this.logger.log(`Uitkomst voor ${datum}: ${UitkomstBeslissing[beslissing]}`);
-
-    const aanmeldingen = await this.aanwezigLedenService.getAanmeldingen(datum, datum);
-    const terletAanmeldingen = aanmeldingen.filter(a => a.VELD_ID === VELD_ID_TERLET);
-
-    await this.emailVliegers(beslissing, terletAanmeldingen, datumString);
-    await this.emailCrew(beslissing, datum, datumString);
-  }
-
-  /*
-   Toetsen of de DDWV dag doorgaat: club, lieren, slepen of annuleren.
-  */
-  private async bepaalTypeBedrijf(datum: string, rooster: RoosterRecord): Promise<UitkomstBeslissing> {
     const aanmeldingen = await this.aanwezigLedenService.getAanmeldingenVoorVeld(datum, datum, VELD_ID_TERLET);
     const totaal = aanmeldingen.totaal ?? 0;
 
     this.logger.log(`Aantal aanmeldingen voor ${datum}: ${totaal} (Clubbedrijf: ${rooster.CLUB_BEDRIJF}, MinSleepStart: ${rooster.MIN_SLEEPSTART}, MinLierStart: ${rooster.MIN_LIERSTART})`);
 
+    const beslissing = this.bepaalTypeBedrijf(rooster, totaal);
+    this.logger.log(`Uitkomst voor ${datum}: ${UitkomstBeslissing[beslissing]}`);
+
+    await this.verwerkBeslissing(datum, rooster, beslissing);
+
+    await this.emailVliegers(beslissing, aanmeldingen.dataset ?? [], datumString);
+    await this.emailCrew(beslissing, datum, datumString);
+  }
+
+  /*
+   Toetsen of de DDWV dag doorgaat: club, lieren, slepen of annuleren.
+   Ontbrekende drempels vallen terug op Infinity (fail closed = annuleren), niet 0.
+  */
+  private bepaalTypeBedrijf(rooster: RoosterRecord, totaal: number): UitkomstBeslissing {
     let typeBedrijf = UitkomstBeslissing.ANNULEREN;
-    if (totaal >= (rooster.MIN_SLEEPSTART ?? 0)) {
+    if (totaal >= (rooster.MIN_SLEEPSTART ?? Number.POSITIVE_INFINITY)) {
       typeBedrijf = UitkomstBeslissing.SLEPEN;
     }
-    if (totaal >= (rooster.MIN_LIERSTART ?? 0)) {
+    if (totaal >= (rooster.MIN_LIERSTART ?? Number.POSITIVE_INFINITY)) {
       typeBedrijf = UitkomstBeslissing.LIEREN;
     }
     if (rooster.CLUB_BEDRIJF === true) {
       typeBedrijf = UitkomstBeslissing.CLUB;
     }
-
-    if (typeBedrijf === UitkomstBeslissing.ANNULEREN) {
-      await this.roosterService.updateRooster({ ID: rooster.ID, DDWV: false });
-    } else {
-      await this.zetDaginfo(datum, typeBedrijf);
-    }
-
     return typeBedrijf;
   }
 
+  private async verwerkBeslissing(datum: string, rooster: RoosterRecord, typeBedrijf: UitkomstBeslissing): Promise<void> {
+    if (typeBedrijf === UitkomstBeslissing.ANNULEREN) {
+      await this.roosterService.updateRooster({ ID: rooster.ID, DDWV: false });
+
+      const daginfo = await this.daginfoService.getDaginfo(datum);
+      if (daginfo) {
+        await this.daginfoService.updateDaginfo({ ID: daginfo.ID, DDWV: false });
+      }
+    } else {
+      await this.zetDaginfo(datum, typeBedrijf);
+    }
+  }
 
   private async zetDaginfo(datum: string, typeBedrijf: UitkomstBeslissing): Promise<void> {
     const startmethodeId = typeBedrijf === UitkomstBeslissing.SLEPEN ? STARTMETHODE_SLEPEN : STARTMETHODE_LIEREN;
