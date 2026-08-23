@@ -21,4 +21,16 @@ export class AanwezigLedenService {
     });
     return response.dataset ?? [];
   }
+
+  async getAanmeldingenVoorVeld(
+    beginDatum: string,
+    eindDatum: string,
+    veldId: number
+  ): Promise<HeliosDatasetResponse<AanwezigLidRecord>> {
+    return this.apiService.get<HeliosDatasetResponse<AanwezigLidRecord>>('AanwezigLeden/GetObjects', {
+      BEGIN_DATUM: beginDatum,
+      EIND_DATUM: eindDatum,
+      VLIEGVELD: veldId
+    });
+  }
 }

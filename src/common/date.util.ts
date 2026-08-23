@@ -20,3 +20,8 @@ export function toDutchDisplay(date: Date): string {
   const year = date.getFullYear();
   return `${dayName} ${day}-${month}-${year}`;
 }
+
+export function ymdToDagMaandJaar(datum: string): string {
+  const [year, month, day] = datum.split('-');
+  return `${day}-${month}-${year}`;
+}

@@ -1,6 +1,6 @@
 import {Injectable, Logger} from '@nestjs/common';
 import { loadTemplate, renderTemplate } from '../common/html.util';
-import {UitkomstBeslissing} from "../helios/services/ddwv.service";
+import {UitkomstBeslissing} from "./uitkomst-beslissing";
 
 @Injectable()
 export class DdwvMailBuilder {

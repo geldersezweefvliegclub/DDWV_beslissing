@@ -4,6 +4,9 @@ import {APIService, HeliosDatasetResponse} from './api.service';
 export interface RoosterRecord {
   ID?: number;
   DDWV?: boolean;
+  CLUB_BEDRIJF?: boolean;
+  MIN_SLEEPSTART?: number;
+  MIN_LIERSTART?: number;
 }
 
 @Injectable()
@@ -29,5 +32,9 @@ export class RoosterService {
       DATUM: datum,
     });
     return response as RoosterRecord;
+  }
+
+  async updateRooster(rooster: RoosterRecord): Promise<RoosterRecord> {
+    return this.apiService.put<RoosterRecord>('Rooster/SaveObject', rooster);
   }
 }

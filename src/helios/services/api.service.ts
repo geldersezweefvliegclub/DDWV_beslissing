@@ -42,6 +42,20 @@ export class APIService {
     return response.json() as Promise<T>;
   }
 
+  async post<T>(endpoint: string, body: unknown, params?: KeyValueArray): Promise<T> {
+    const response = await this.request('POST', endpoint, JSON.stringify(body), params, this.jsonHeaders());
+    return response.json() as Promise<T>;
+  }
+
+  async put<T>(endpoint: string, body: unknown, params?: KeyValueArray): Promise<T> {
+    const response = await this.request('PUT', endpoint, JSON.stringify(body), params, this.jsonHeaders());
+    return response.json() as Promise<T>;
+  }
+
+  private jsonHeaders(): Headers {
+    return new Headers({ 'Content-Type': 'application/json' });
+  }
+
   private async request(
     method: string,
     endpoint: string,
